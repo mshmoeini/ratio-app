@@ -5,9 +5,10 @@ provider "google" {
   credentials = file("./msh-cloud-project-0d1258394118.json")
 }
 
-resource "google_compute_instance" "default" {
-  name         = "ratio-vm-v2" 
-  machine_type = "e2-medium"  
+# VM جدید
+resource "google_compute_instance" "ratio_vm_v4" {
+  name         = "ratio-v4-vm"
+  machine_type = "e2-medium"
   zone         = "us-central1-a"
 
   tags = ["http-server"]
@@ -32,6 +33,7 @@ resource "google_compute_instance" "default" {
   EOT
 }
 
+# فایروال برای باز کردن پورت 8081
 resource "google_compute_firewall" "allow-8081" {
   name    = "allow-8081"
   network = "default"
@@ -41,8 +43,8 @@ resource "google_compute_firewall" "allow-8081" {
     ports    = ["8081"]
   }
 
-  direction = "INGRESS"
-  priority  = 1000
-  target_tags = ["http-server"]
+  direction     = "INGRESS"
+  priority      = 1000
+  target_tags   = ["http-server"]
   source_ranges = ["0.0.0.0/0"]
 }
