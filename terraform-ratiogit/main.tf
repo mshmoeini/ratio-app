@@ -1,5 +1,5 @@
 provider "google" {
-  project     = "Ymsh-cloud-project"
+  project     = "msh-cloud-project"
   region      = "us-central1"
   zone        = "us-central1-a"
   credentials = file("./msh-cloud-project-0d1258394118.json")
