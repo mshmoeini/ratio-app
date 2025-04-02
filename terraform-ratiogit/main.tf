@@ -1,3 +1,10 @@
+provider "google" {
+  project     = "YOUR_PROJECT_ID"
+  region      = "us-central1"
+  zone        = "us-central1-a"
+  credentials = file("./msh-cloud-project-0d1258394118.json")
+}
+
 resource "google_compute_instance" "default" {
   name         = "ratio-vm-v2" 
   machine_type = "e2-medium"  
