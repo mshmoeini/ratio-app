@@ -1,42 +1,57 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
+import psycopg2
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    result = ''
-    if request.method == 'POST':
-        try:
-            num1 = float(request.form['num1'])
-            num2 = float(request.form['num2'])
-            if num1 == 0:
-                result = "Cannot calculate percentage. Number 1 must not be zero."
-            else:
-                percentage = (num2 / num1) * 100
-                result = f"📊 Number 2 is {percentage:.2f}% of Number 1."
-        except:
-            result = "⚠️ Please enter valid numbers."
+def get_connection():
+    return psycopg2.connect(
+        dbname="ratios",
+        user="appuser",
+        password="StrongPassword123",
+        host="34.27.28.193", 
+        port="5432"
+    )
 
-    return f'''
-        <html>
-        <head>
-            <title>Ratio App v3</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        </head>
-        <body class="container mt-5">
-            <h2 class="mb-4">💡 Ratio App - Version 3</h2>
-            <form method="POST" class="mb-3">
-                <div class="mb-3">
-                    <label>Number 1</label>
-                    <input type="number" step="any" name="num1" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label>Number 2</label>
-                    <input type="number" step="any" name="num2" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Calculate</button>
-            </form>
-            <h4>{result}</h4>
-        </body>
-        </html>
-    '''
+def init_db():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS ratios (
+            id SERIAL PRIMARY KEY,
+            num1 FLOAT,
+            num2 FLOAT,
+            result FLOAT,
+            timestamp TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    result = None
+    if request.method == "POST":
+        num1 = float(request.form["num1"])
+        num2 = float(request.form["num2"])
+        result = (num2 / num1) * 100
+
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO ratios (num1, num2, result) VALUES (%s, %s, %s)", (num1, num2, result))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    # Table
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT num1, num2, result, timestamp FROM ratios ORDER BY timestamp DESC LIMIT 10")
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template("index.html", result=result, records=records)
+
+if __name__ == "__main__":
+    init_db()
+    app.run(host="0.0.0.0", port=5000)

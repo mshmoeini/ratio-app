@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ratio App</title>
+</head>
+<body>
+    <h1>Calculate Ratio</h1>
+    <form method="POST">
+        <input type="number" name="num1" step="any" required placeholder="Number 1">
+        <input type="number" name="num2" step="any" required placeholder="Number 2">
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if result %}
+        <p><strong>Result:</strong> {{ result | round(2) }}%</p>
+    {% endif %}
+
+    {% if records %}
+        <h2>Latest Ratios</h2>
+        <table border="1">
+            <tr>
+                <th>Num 1</th>
+                <th>Num 2</th>
+                <th>Result (%)</th>
+                <th>Timestamp</th>
+            </tr>
+            {% for row in records %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] | round(2) }}</td>
+                <td>{{ row[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
