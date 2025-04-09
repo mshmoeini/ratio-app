@@ -1,6 +1,8 @@
 from flask import Flask, request, render_template
 import psycopg2
 
+init_db()
+
 app = Flask(__name__)
 
 def get_connection():
