@@ -4,35 +4,20 @@
     <title>Ratio App</title>
 </head>
 <body>
-    <h1>Calculate Ratio</h1>
+    <h1>Calculate Percentage</h1>
     <form method="POST">
-        <input type="number" name="num1" step="any" required placeholder="Number 1">
-        <input type="number" name="num2" step="any" required placeholder="Number 2">
+        <input type="number" name="num1" step="any" required>
+        <input type="number" name="num2" step="any" required>
         <button type="submit">Calculate</button>
     </form>
-
-    {% if result %}
-        <p><strong>Result:</strong> {{ result | round(2) }}%</p>
+    {% if result is not none %}
+        <h2>{{ num2 }} is {{ result }}% of {{ num1 }}</h2>
     {% endif %}
-
-    {% if records %}
-        <h2>Latest Ratios</h2>
-        <table border="1">
-            <tr>
-                <th>Num 1</th>
-                <th>Num 2</th>
-                <th>Result (%)</th>
-                <th>Timestamp</th>
-            </tr>
-            {% for row in records %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] | round(2) }}</td>
-                <td>{{ row[3] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+    <h3>Recent History:</h3>
+    <ul>
+        {% for r in history %}
+            <li>{{ r[1] }} , {{ r[2] }} → {{ r[3] }}%</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
